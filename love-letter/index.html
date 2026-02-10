@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For My Love ❤️</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
 *{
   box-sizing:border-box;
-  font-family:'Segoe UI',sans-serif;
+  font-family:'Poppins',sans-serif;
 }
 
 body{
@@ -17,8 +19,71 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  background:#ffffff;
+  background:#fff;
   overflow:hidden;
+}
+
+.candlelight{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at center, rgba(255,200,160,0.25), rgba(40,0,10,0.6));
+  pointer-events:none;
+  opacity:0;
+  animation:flicker 4s infinite alternate;
+  transition:opacity 1.2s ease;
+  z-index:50;
+}
+
+@keyframes flicker{
+  0%{filter:brightness(1)}
+  50%{filter:brightness(0.95)}
+  100%{filter:brightness(1.03)}
+}
+
+.secret-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .5s ease;
+  z-index:100;
+}
+
+.secret-box{
+  background:#fff;
+  padding:25px 30px;
+  border-radius:14px;
+  text-align:center;
+  max-width:280px;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+  transform:scale(0.7);
+  transition:transform .5s ease;
+}
+
+.secret-box h2{
+  font-family:'Great Vibes',cursive;
+  color:#ff3366;
+  font-size:32px;
+  margin:0 0 10px;
+}
+
+.secret-box p{
+  font-size:14px;
+  color:#444;
+  line-height:1.5;
+}
+
+.secret-show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.secret-show .secret-box{
+  transform:scale(1);
 }
 
 .envelope-wrap{
@@ -35,9 +100,7 @@ body{
   transform-style:preserve-3d;
 }
 
-.envelope:hover{
-  transform:scale(1.03);
-}
+.envelope:hover{ transform:scale(1.03); }
 
 .back{
   position:absolute;
@@ -86,21 +149,14 @@ body{
   border-radius:50%;
 }
 
-.heart:before{
-  top:-18px;
-  left:0;
-}
-
-.heart:after{
-  left:-18px;
-  top:0;
-}
+.heart:before{ top:-18px; }
+.heart:after{ left:-18px; }
 
 .letter{
   position:absolute;
   width:90%;
   min-height:180px;
-  background:#ffffff;
+  background:#fff;
   left:5%;
   bottom:12px;
   border-radius:8px;
@@ -112,24 +168,38 @@ body{
   transition:transform 1.2s cubic-bezier(.22,1.2,.36,1), opacity .8s ease;
   z-index:2;
   opacity:0;
-  backface-visibility:hidden;
-  overflow:visible;
 }
 
 .letter h3{
   margin:6px 0 10px;
   color:#ff3366;
+  font-family:'Great Vibes',cursive;
+  font-size:28px;
 }
 
 .letter p{
   font-size:14px;
-  line-height:1.5;
-  color:#444444;
+  line-height:1.6;
+  color:#444;
 }
 
-.open .flap{
-  transform:rotateX(180deg);
+#counter{
+  margin-top:10px;
+  font-weight:600;
+  color:#ff3366;
+  font-size:14px;
 }
+
+.love-photo{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid #ff5a8a;
+  margin-bottom:8px;
+}
+
+.open .flap{ transform:rotateX(180deg); }
 
 .open .letter{
   transform:translateY(-90px) rotateX(0deg) scaleY(1);
@@ -137,34 +207,58 @@ body{
   z-index:7;
 }
 
-.open .front{
-  z-index:1;
-}
+.open .front{ z-index:1; }
 
 .floating{
-  position:absolute;
+  position:fixed;
   pointer-events:none;
-  color:#ff5fa2;
   font-size:20px;
 }
 
 .confetti{
-  position:absolute;
+  position:fixed;
   pointer-events:none;
   width:8px;
   height:8px;
+}
+
+.petal{
+  position:fixed;
+  pointer-events:none;
+  width:12px;
+  height:16px;
+  background:radial-gradient(circle at 30% 30%, #ffc1cf, #cc0038);
+  border-radius:60% 40% 60% 40%;
+  opacity:0.85;
 }
 </style>
 </head>
 
 <body>
 
+<div class="candlelight" id="candle"></div>
+
+<div class="secret-overlay" id="secret">
+  <div class="secret-box">
+    <h2>I Love You ❤️</h2>
+    <p>
+      You found my secret 😘<br><br>
+      You are my forever, my happiness,
+      and my greatest blessing.
+      I love you more than words can say 💍💕
+    </p>
+  </div>
+</div>
+
 <div class="envelope-wrap">
   <div class="envelope" id="envelope">
 
     <div class="back"></div>
 
-    <div class="letter" id="letter">
+    <div class="letter">
+
+      <img src="us.jpg" class="love-photo" id="photo">
+
       <h3>My Love ❤️</h3>
       <p>
         Dear My Beautiful Wife,<br><br>
@@ -173,6 +267,9 @@ body{
         and my forever love.<br><br>
         I’m lucky to have you. Always. 💕
       </p>
+
+      <div id="counter"></div>
+
     </div>
 
     <div class="front"></div>
@@ -185,79 +282,122 @@ body{
 <script>
 let opened=false;
 const envelope=document.getElementById('envelope');
+const candle=document.getElementById('candle');
+const photo=document.getElementById('photo');
+const secret=document.getElementById('secret');
 
 envelope.addEventListener('click',openLetter);
 
-document.addEventListener('keydown',e=>{
-  if(e.key==='Enter') openLetter();
+let lastTap=0;
+photo.addEventListener('touchend',handleTap);
+photo.addEventListener('click',handleTap);
+
+secret.addEventListener('click',()=>{
+  secret.classList.remove('secret-show');
 });
+
+function handleTap(){
+  const now=Date.now();
+  if(now-lastTap<350){
+    showSecret();
+  }
+  lastTap=now;
+}
+
+function showSecret(){
+  secret.classList.add('secret-show');
+}
 
 function openLetter(){
   if(opened) return;
   opened=true;
 
   envelope.classList.add('open');
+  candle.style.opacity=1;
 
   const rect=envelope.getBoundingClientRect();
+  const x=rect.left+rect.width/2;
+  const y=rect.top+rect.height/2;
 
-  const originX=rect.left+rect.width/2;
-  const originY=rect.top+rect.height/2;
-
-  createHearts(originX,originY);
-  createConfetti(originX,originY);
+  createHearts(x,y);
+  createConfetti(x,y);
+  createPetals(x,y);
 }
 
-function createHearts(x,y){
-  for(let i=0;i<22;i++){
-    const heart=document.createElement('div');
-    heart.className='floating';
-    heart.textContent='❤️';
+function updateCounter(){
+  const start=new Date('2024-09-15');
+  const now=new Date();
+  const days=Math.floor((now-start)/(1000*60*60*24));
 
-    heart.style.left=x+'px';
-    heart.style.top=y+'px';
-    heart.style.position='fixed';
+  document.getElementById('counter').textContent=
+    `We’ve been in love for ${days} days ❤️`;
+}
+
+updateCounter();
+
+function createHearts(x,y){
+  for(let i=0;i<18;i++){
+    const h=document.createElement('div');
+    h.className='floating';
+    h.textContent='❤️';
+
+    h.style.left=x+'px';
+    h.style.top=y+'px';
 
     const dx=(Math.random()-0.5)*220;
-    const dy=-(160+Math.random()*260);
+    const dy=-(160+Math.random()*240);
 
-    heart.animate([
+    h.animate([
       {transform:'translate(0,0) scale(0.4)',opacity:1},
-      {transform:`translate(${dx}px,${dy}px) scale(1.3)`,opacity:0}
-    ],{
-      duration:2400+Math.random()*900,
-      easing:'ease-out'
-    });
+      {transform:`translate(${dx}px,${dy}px) scale(1.2)`,opacity:0}
+    ],{duration:2800,easing:'ease-out'});
 
-    document.body.appendChild(heart);
-
-    setTimeout(()=>heart.remove(),3600);
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),3000);
   }
 }
 
 function createConfetti(x,y){
-  for(let i=0;i<36;i++){
+  for(let i=0;i<26;i++){
     const c=document.createElement('div');
     c.className='confetti';
 
     c.style.left=x+'px';
     c.style.top=y+'px';
-    c.style.position='fixed';
     c.style.background=`hsl(${Math.random()*360},80%,60%)`;
 
-    const dx=(Math.random()-0.5)*320;
-    const dy=(170+Math.random()*320);
+    const dx=(Math.random()-0.5)*280;
+    const dy=(180+Math.random()*300);
 
     c.animate([
       {transform:'translate(0,0) rotate(0)',opacity:1},
-      {transform:`translate(${dx}px,${dy}px) rotate(420deg)`,opacity:0}
-    ],{
-      duration:2200+Math.random()*800,
-      easing:'ease-out'
-    });
+      {transform:`translate(${dx}px,${dy}px) rotate(360deg)`,opacity:0}
+    ],{duration:2400,easing:'ease-out'});
 
     document.body.appendChild(c);
+    setTimeout(()=>c.remove(),2600);
+  }
+}
 
-    setTimeout(()=>c.remove(),3200);
+function createPetals(x,y){
+  for(let i=0;i<22;i++){
+    const p=document.createElement('div');
+    p.className='petal';
+
+    p.style.left=x+'px';
+    p.style.top=y+'px';
+
+    const dx=(Math.random()-0.5)*160;
+    const dy=(Math.random()-0.5)*160;
+    const scale=1.4+Math.random()*0.8;
+
+    p.animate([
+      {transform:'translate(0,0) scale(0.4)',opacity:1},
+      {transform:`translate(${dx}px,${dy}px) scale(${scale})`,opacity:0}
+    ],{duration:2200,easing:'ease-out'});
+
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),2300);
   }
 }
 </script>
