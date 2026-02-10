@@ -23,23 +23,6 @@ body{
   overflow:hidden;
 }
 
-.candlelight{
-  position:fixed;
-  inset:0;
-  background:radial-gradient(circle at center, rgba(255,200,160,0.25), rgba(40,0,10,0.6));
-  pointer-events:none;
-  opacity:0;
-  animation:flicker 4s infinite alternate;
-  transition:opacity 1.2s ease;
-  z-index:50;
-}
-
-@keyframes flicker{
-  0%{filter:brightness(1)}
-  50%{filter:brightness(0.95)}
-  100%{filter:brightness(1.03)}
-}
-
 .secret-overlay{
   position:fixed;
   inset:0;
@@ -89,6 +72,7 @@ body{
 .envelope-wrap{
   position:relative;
   perspective:1200px;
+  margin-top:120px;
 }
 
 .envelope{
@@ -209,10 +193,12 @@ body{
 
 .open .front{ z-index:1; }
 
-.floating{
+.bubble-heart{
   position:fixed;
   pointer-events:none;
-  font-size:20px;
+  font-size:18px;
+  color:#ff5fa2;
+  opacity:0;
 }
 
 .confetti{
@@ -235,8 +221,6 @@ body{
 </head>
 
 <body>
-
-<div class="candlelight" id="candle"></div>
 
 <div class="secret-overlay" id="secret">
   <div class="secret-box">
@@ -282,7 +266,6 @@ body{
 <script>
 let opened=false;
 const envelope=document.getElementById('envelope');
-const candle=document.getElementById('candle');
 const photo=document.getElementById('photo');
 const secret=document.getElementById('secret');
 
@@ -313,15 +296,10 @@ function openLetter(){
   opened=true;
 
   envelope.classList.add('open');
-  candle.style.opacity=1;
 
-  const rect=envelope.getBoundingClientRect();
-  const x=rect.left+rect.width/2;
-  const y=rect.top+rect.height/2;
-
-  createHearts(x,y);
-  createConfetti(x,y);
-  createPetals(x,y);
+  startBubbleHearts();
+  createConfettiBurst();
+  createPetalsBurst();
 }
 
 function updateCounter(){
@@ -335,30 +313,46 @@ function updateCounter(){
 
 updateCounter();
 
-function createHearts(x,y){
-  for(let i=0;i<18;i++){
-    const h=document.createElement('div');
-    h.className='floating';
-    h.textContent='❤️';
-
-    h.style.left=x+'px';
-    h.style.top=y+'px';
-
-    const dx=(Math.random()-0.5)*220;
-    const dy=-(160+Math.random()*240);
-
-    h.animate([
-      {transform:'translate(0,0) scale(0.4)',opacity:1},
-      {transform:`translate(${dx}px,${dy}px) scale(1.2)`,opacity:0}
-    ],{duration:2800,easing:'ease-out'});
-
-    document.body.appendChild(h);
-    setTimeout(()=>h.remove(),3000);
+function startBubbleHearts(){
+  for(let i=0;i<120;i++){
+    setTimeout(createBubbleHeart,i*150);
   }
 }
 
-function createConfetti(x,y){
-  for(let i=0;i<26;i++){
+function createBubbleHeart(){
+  const h=document.createElement('div');
+  h.className='bubble-heart';
+  h.textContent='❤️';
+
+  const x=Math.random()*window.innerWidth;
+  const y=window.innerHeight+20;
+
+  h.style.left=x+'px';
+  h.style.top=y+'px';
+
+  const size=14+Math.random()*16;
+  h.style.fontSize=size+'px';
+
+  const drift=(Math.random()-0.5)*140;
+  const rise=window.innerHeight+300;
+
+  h.animate([
+    {transform:'translate(0,0)',opacity:0},
+    {transform:`translate(${drift}px,-${rise/2}px)`,opacity:0.8},
+    {transform:`translate(${drift}px,-${rise}px)`,opacity:0}
+  ],{duration:6500,easing:'ease-out'});
+
+  document.body.appendChild(h);
+
+  setTimeout(()=>h.remove(),6700);
+}
+
+function createConfettiBurst(){
+  const rect=envelope.getBoundingClientRect();
+  const x=rect.left+rect.width/2;
+  const y=rect.top+rect.height/2;
+
+  for(let i=0;i<35;i++){
     const c=document.createElement('div');
     c.className='confetti';
 
@@ -366,38 +360,42 @@ function createConfetti(x,y){
     c.style.top=y+'px';
     c.style.background=`hsl(${Math.random()*360},80%,60%)`;
 
-    const dx=(Math.random()-0.5)*280;
-    const dy=(180+Math.random()*300);
+    const dx=(Math.random()-0.5)*300;
+    const dy=(150+Math.random()*300);
 
     c.animate([
       {transform:'translate(0,0) rotate(0)',opacity:1},
       {transform:`translate(${dx}px,${dy}px) rotate(360deg)`,opacity:0}
-    ],{duration:2400,easing:'ease-out'});
+    ],{duration:2500,easing:'ease-out'});
 
     document.body.appendChild(c);
     setTimeout(()=>c.remove(),2600);
   }
 }
 
-function createPetals(x,y){
-  for(let i=0;i<22;i++){
+function createPetalsBurst(){
+  const rect=envelope.getBoundingClientRect();
+  const x=rect.left+rect.width/2;
+  const y=rect.top+rect.height/2;
+
+  for(let i=0;i<30;i++){
     const p=document.createElement('div');
     p.className='petal';
 
     p.style.left=x+'px';
     p.style.top=y+'px';
 
-    const dx=(Math.random()-0.5)*160;
-    const dy=(Math.random()-0.5)*160;
-    const scale=1.4+Math.random()*0.8;
+    const dx=(Math.random()-0.5)*240;
+    const dy=(Math.random()-0.5)*240;
+    const scale=1.2+Math.random()*0.8;
 
     p.animate([
       {transform:'translate(0,0) scale(0.4)',opacity:1},
       {transform:`translate(${dx}px,${dy}px) scale(${scale})`,opacity:0}
-    ],{duration:2200,easing:'ease-out'});
+    ],{duration:2600,easing:'ease-out'});
 
     document.body.appendChild(p);
-    setTimeout(()=>p.remove(),2300);
+    setTimeout(()=>p.remove(),2700);
   }
 }
 </script>
